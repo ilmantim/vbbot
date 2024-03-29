@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from viberbotapp.models import Mro
+
+
+@admin.register(Mro)
+class MroAdmin(admin.ModelAdmin):
+    pass
