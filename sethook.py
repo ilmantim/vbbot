@@ -9,7 +9,7 @@ vb_token = env.str('VB_TOKEN')
 hook = 'https://chatapi.viber.com/pa/set_webhook'
 headers = {'X-Viber-Auth-Token': vb_token}
 sen = dict(
-    url='https://b8bb-178-155-5-88.ngrok-free.app/viber/',
+    url='https://mackerel-cuddly-deadly.ngrok-free.app/viber/',
     event_types=[
         'unsubscribed', 'conversation_started', 'message',
         'delivered', 'subscribed'

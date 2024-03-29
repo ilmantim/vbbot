@@ -1,17 +1,17 @@
-import json
+
 import logging
-from rest_framework import generics, serializers
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from viberbot.api.messages import TextMessage
 from viberbot.api.viber_requests import ViberMessageRequest, \
     ViberSubscribedRequest, ViberFailedRequest
 
-from .models import Mro
+
 from django.views.decorators.csrf import csrf_exempt
 from viberbot.api.bot_configuration import BotConfiguration
 from viberbot import Api
-from django.http import HttpResponse
+
 from environs import Env
 
 
@@ -25,19 +25,6 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-
-class MroSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Mro
-        fields = '__all__'
-
-
-class Mros(generics.ListCreateAPIView):
-    queryset = Mro.objects.all()
-    serializer_class = MroSerializer
-
-
-BASE_URL = 'https://b8bb-178-155-5-88.ngrok-free.app'
 vb_token = env.str('VB_TOKEN')
 
 bot_configuration = BotConfiguration(
@@ -48,18 +35,48 @@ bot_configuration = BotConfiguration(
 viber = Api(bot_configuration)
 
 
+START, CHOICE, END = range(3)
+
+state = START
+
+
 @api_view(['POST'])
 @csrf_exempt
 def webhook(request):
     post_data = request.body.decode('utf-8')
     logger.debug("received request. post data: {0}".format(post_data))
     viber_request = viber.parse_request(post_data)
+
+    global state
+
     if isinstance(viber_request, ViberMessageRequest):
         message = viber_request.message
-        # lets echo back
-        viber.send_messages(viber_request.sender.id, [
-            message
-        ])
+        print(state)
+        if state == START:
+            viber.send_messages(viber_request.sender.id, [
+                TextMessage(
+                    text='Hello! Please choose an option: \n a) Option A \n b) Option B \n c) Option C')
+            ])
+            state = CHOICE
+        elif state == CHOICE:
+            if message.text.lower() == 'a':
+                viber.send_messages(viber_request.sender.id, [
+                    TextMessage(text='You chose Option A')
+                ])
+            elif message.text.lower() == 'b':
+                viber.send_messages(viber_request.sender.id, [
+                    TextMessage(text='You chose Option B')
+                ])
+            elif message.text.lower() == 'c':
+                viber.send_messages(viber_request.sender.id, [
+                    TextMessage(text='You chose Option C')
+                ])
+            else:
+                viber.send_messages(viber_request.sender.id, [
+                    TextMessage(text='Invalid choice. Please choose again.')
+                ])
+            state = END
+
     elif isinstance(viber_request, ViberSubscribedRequest):
         viber.send_messages(viber_request.get_user.id, [
             TextMessage(text="thanks for subscribing!")
