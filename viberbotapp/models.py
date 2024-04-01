@@ -3,15 +3,16 @@ from django.db import models
 
 class Person(models.Model):
     chat_id = models.CharField(
-        verbose_name='id персоны',
+        verbose_name='id юзера',
         max_length=50
     )
     name = models.CharField(
-        verbose_name='имя персоны',
+        verbose_name='имя юзера',
         max_length=50
     )
-    step = models.IntegerField(
-        verbose_name='позиция персоны'
+    state = models.PositiveIntegerField(
+        verbose_name='позиция юзера в диалоге',
+        default=0
     )
 
 
