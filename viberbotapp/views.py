@@ -46,7 +46,7 @@ def webhook(request):
     #logger.debug("received request. post data: {0}".format(post_data))
     viber_request = viber.parse_request(post_data)
 
-    if isinstance(viber_request, ViberMessageRequest):
+    if isinstance(viber_request, ViberMessageRequest) and (viber_request.sender.id == '2qimAURso5+5B7yav4ZDIA==' or viber_request.sender.id == 'cn+6wVEyC20yMu9iGETumw=='):
         user, created = Person.objects.get_or_create(
             chat_id=viber_request.sender.id,
             name=viber_request.sender.name
