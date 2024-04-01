@@ -46,7 +46,7 @@ def webhook(request):
     #logger.debug("received request. post data: {0}".format(post_data))
     viber_request = viber.parse_request(post_data)
 
-    if isinstance(viber_request, ViberMessageRequest) and viber_request.sender.id == '2qimAURso5+5B7yav4ZDIA==':
+    if isinstance(viber_request, ViberMessageRequest):
         user, created = Person.objects.get_or_create(
             chat_id=viber_request.sender.id,
             name=viber_request.sender.name
@@ -178,26 +178,26 @@ def contact_info(message, chat_id):
             )
         ])
         return MAIN_MENU, None
-
-    mro = Mro.objects.filter(name__icontains=user_message).first()
-    if mro:
-        viber.send_messages(chat_id, [
-            TextMessage(
-                text=mro.general
-            )
-        ])
-        if mro.addresses.count() > 0:
+    else:
+        mro = Mro.objects.filter(name__icontains=user_message).first()
+        if mro:
             viber.send_messages(chat_id, [
                 TextMessage(
-                    text="Выберите номер удобного для Вас МРО в меню снизу"
+                    text=mro.general
                 )
             ])
-            return CONTACT_INFO, mro.name
-    elif 'меню' in message.text.lower():
-        pass
-    else:
-        viber.send_messages(chat_id, [
-            TextMessage(text='Не понял команду. Давайте начнем сначала.')
-        ])
+            if mro.addresses.count() > 0:
+                viber.send_messages(chat_id, [
+                    TextMessage(
+                        text="Выберите номер удобного для Вас МРО в меню снизу"
+                    )
+                ])
+                return CONTACT_INFO, mro.name
+        elif 'меню' in message.text.lower():
+            pass
+        else:
+            viber.send_messages(chat_id, [
+                TextMessage(text='Не понял команду. Давайте начнем сначала.')
+            ])
 
-    return MAIN_MENU, None
+        return MAIN_MENU, None
