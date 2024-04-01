@@ -13,6 +13,7 @@ from viberbot import Api
 from environs import Env
 
 from viberbotapp.models import Person, Mro
+from time import sleep
 
 env = Env()
 env.read_env()
@@ -45,37 +46,37 @@ def webhook(request):
     #logger.debug("received request. post data: {0}".format(post_data))
     viber_request = viber.parse_request(post_data)
 
-    if isinstance(viber_request, ViberMessageRequest):
-        if viber_request.sender.id == '2qimAURso5+5B7yav4ZDIA==':
-            user, created = Person.objects.get_or_create(
-                chat_id=viber_request.sender.id,
-                name=viber_request.sender.name
-            )
-            state = user.state
-            chat_id = user.chat_id
-            message = viber_request.message
-            print('Сейчас такой номер стейта: ', state)
-            print('Сейчас такое сообщение: ', message)
-            print('Сейчас такое id: ', chat_id)
-            print('Это контекст сейчас', user.context)
-            if state == START:
-                state = handle_start(chat_id)
-            elif state == MAIN_MENU:
-                state = handle_main_menu(message, chat_id)
-            elif state == SUBMIT_READINGS:
-                state = submit_readings(chat_id)
-            elif state == METER_INFO:
-                state = meter_info(chat_id)
-            elif state == FAVORITES:
-                state = favorites(chat_id)
-            elif state == CONTACT_INFO:
-                state = contact_info(message, chat_id)
-            if state == MAIN_MENU:
-                viber.send_messages(chat_id, [
-                    TextMessage(text='Главное меню. Выберите раздел')
-                ])
-            user.state = state
-            user.save()
+    if isinstance(viber_request, ViberMessageRequest) and viber_request.sender.id == '2qimAURso5+5B7yav4ZDIA==':
+        user, created = Person.objects.get_or_create(
+            chat_id=viber_request.sender.id,
+            name=viber_request.sender.name
+        )
+        state = user.state
+        chat_id = user.chat_id
+        message = viber_request.message
+        print('Сейчас такой номер стейта: ', state)
+        print('Сейчас такое сообщение: ', message)
+        print('Сейчас такое id: ', chat_id)
+        print('Это контекст сейчас', user.context)
+        if state == START:
+            state = handle_start(chat_id)
+        elif state == MAIN_MENU:
+            state = handle_main_menu(message, chat_id)
+        elif state == SUBMIT_READINGS:
+            state = submit_readings(chat_id)
+        elif state == METER_INFO:
+            state = meter_info(chat_id)
+        elif state == FAVORITES:
+            state = favorites(chat_id)
+        elif state == CONTACT_INFO:
+            state, mro_name = contact_info(message, chat_id)
+            user.context = mro_name
+        if state == MAIN_MENU:
+            viber.send_messages(chat_id, [
+                TextMessage(text='Главное меню. Выберите раздел')
+            ])
+        user.state = state
+        user.save()
 
     return Response(status=200)
 
@@ -176,7 +177,7 @@ def contact_info(message, chat_id):
                 text=address.name
             )
         ])
-        return MAIN_MENU
+        return MAIN_MENU, None
 
     mro = Mro.objects.filter(name__icontains=user_message).first()
     if mro:
@@ -191,10 +192,7 @@ def contact_info(message, chat_id):
                     text="Выберите номер удобного для Вас МРО в меню снизу"
                 )
             ])
-            user.context = mro.name
-            user.save()
-            print('Это контекст сейчас', user.context)
-            return CONTACT_INFO
+            return CONTACT_INFO, mro.name
     elif 'меню' in message.text.lower():
         pass
     else:
@@ -202,4 +200,4 @@ def contact_info(message, chat_id):
             TextMessage(text='Не понял команду. Давайте начнем сначала.')
         ])
 
-    return MAIN_MENU
+    return MAIN_MENU, None

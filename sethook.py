@@ -12,7 +12,8 @@ headers = {'X-Viber-Auth-Token': vb_token}
 sen = dict(
     url=f'https://{url}/viber/',
     event_types=[
-         'conversation_started', 'message'
+         'unsubscribed', 'conversation_started', 'message',
+         'delivered', 'subscribed'
     ]
 )
 r = requests.post(hook, json.dumps(sen), headers=headers)
