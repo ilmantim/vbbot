@@ -14,6 +14,11 @@ class Person(models.Model):
         verbose_name='позиция юзера в диалоге',
         default=0
     )
+    context = models.TextField(
+        verbose_name='Контекст юзера',
+        null=True,
+        blank=True
+    )
 
 
 class Mro(models.Model):

@@ -12,7 +12,7 @@ from viberbot import Api
 
 from environs import Env
 
-from viberbotapp.models import Person
+from viberbotapp.models import Person, Mro
 
 env = Env()
 env.read_env()
@@ -42,46 +42,40 @@ START, MAIN_MENU, SUBMIT_READINGS, METER_INFO, FAVORITES, CONTACT_INFO = range(
 @csrf_exempt
 def webhook(request):
     post_data = request.body.decode('utf-8')
-    logger.debug("received request. post data: {0}".format(post_data))
+    #logger.debug("received request. post data: {0}".format(post_data))
     viber_request = viber.parse_request(post_data)
 
     if isinstance(viber_request, ViberMessageRequest):
-        user, created = Person.objects.get_or_create(
-            chat_id=viber_request.sender.id,
-            name=viber_request.sender.name
-        )
-        state = user.state
-        chat_id = user.chat_id
-        message = viber_request.message
-        print('Сейчас такой номер стейта: ', state)
-        print('Сейчас такое сообщение: ', message)
-        print('Сейчас такое id: ', chat_id)
-        if state == START:
-            state = handle_start(chat_id)
-        elif state == MAIN_MENU:
-            state = handle_main_menu(message, chat_id)
-        elif state == SUBMIT_READINGS:
-            state = submit_readings(chat_id)
-        elif state == METER_INFO:
-            state = meter_info(chat_id)
-        elif state == FAVORITES:
-            state = favorites(chat_id)
-        elif state == CONTACT_INFO:
-            state = contact_info(message, chat_id)
-        if state == MAIN_MENU:
-            viber.send_messages(chat_id, [
-                TextMessage(text='Главное меню. Выберите раздел')
-            ])
-        user.state = state
-        user.save()
-
-    elif isinstance(viber_request, ViberSubscribedRequest):
-        viber.send_messages(viber_request.get_user.id, [
-            TextMessage(text="Спасибо за подписку!")
-        ])
-    elif isinstance(viber_request, ViberFailedRequest):
-        logger.warning("client failed receiving message. failure: {0}".format(
-            viber_request))
+        if viber_request.sender.id == '2qimAURso5+5B7yav4ZDIA==':
+            user, created = Person.objects.get_or_create(
+                chat_id=viber_request.sender.id,
+                name=viber_request.sender.name
+            )
+            state = user.state
+            chat_id = user.chat_id
+            message = viber_request.message
+            print('Сейчас такой номер стейта: ', state)
+            print('Сейчас такое сообщение: ', message)
+            print('Сейчас такое id: ', chat_id)
+            print('Это контекст сейчас', user.context)
+            if state == START:
+                state = handle_start(chat_id)
+            elif state == MAIN_MENU:
+                state = handle_main_menu(message, chat_id)
+            elif state == SUBMIT_READINGS:
+                state = submit_readings(chat_id)
+            elif state == METER_INFO:
+                state = meter_info(chat_id)
+            elif state == FAVORITES:
+                state = favorites(chat_id)
+            elif state == CONTACT_INFO:
+                state = contact_info(message, chat_id)
+            if state == MAIN_MENU:
+                viber.send_messages(chat_id, [
+                    TextMessage(text='Главное меню. Выберите раздел')
+                ])
+            user.state = state
+            user.save()
 
     return Response(status=200)
 
@@ -170,36 +164,42 @@ def favorites(chat_id):
     return state
 
 
-
 def contact_info(message, chat_id):
-    # здесь нужно добавить логику поиска названия МРО в базе данных по message
-    # нужно сократить будет до 1 запроса к БД по названию и если найдено, выводить
-    if 'алатырское' in message.text.lower():  # добавить проверку наличия избранных счетов
+    user_message = message.text.title()
+    user = Person.objects.get(chat_id=chat_id)
+    if user_message.isdigit():
+        mro = Mro.objects.get(name=user.context)
+        addresses = mro.addresses.all()
+        address = addresses.get(num=int(user_message))
         viber.send_messages(chat_id, [
             TextMessage(
-                text=
-                """Адрес: 429820, Чувашская Республика, 
-                г. Алатырь, ул. Московская/Жуковского, д. 64/57,
-                Телефон: 8 (83531) 2-36-30,
-                Режим работы: ПН-ПТ 08:00-17:00 
-                (технический перерыв с 13:00 до 14:00)"""
+                text=address.name
             )
         ])
-    elif 'чебоксарское' in message.text.lower():  # добавить проверку наличия избранных счетов
+        return MAIN_MENU
+
+    mro = Mro.objects.filter(name__icontains=user_message).first()
+    if mro:
         viber.send_messages(chat_id, [
             TextMessage(
-                text=
-                """1 — 428018, г. Чебоксары, пр. Московский, д.41, корп.1
-                2 — 428022, Чувашская Республика, г. Чебоксары, ул. 50 лет Октября, д. 4, пом. 2
-                3 — 428000, Чувашская Республика, г. Чебоксары, Эгерский б-р, д. 33б"""
+                text=mro.general
             )
         ])
+        if mro.addresses.count() > 0:
+            viber.send_messages(chat_id, [
+                TextMessage(
+                    text="Выберите номер удобного для Вас МРО в меню снизу"
+                )
+            ])
+            user.context = mro.name
+            user.save()
+            print('Это контекст сейчас', user.context)
+            return CONTACT_INFO
     elif 'меню' in message.text.lower():
         pass
     else:
         viber.send_messages(chat_id, [
             TextMessage(text='Не понял команду. Давайте начнем сначала.')
         ])
-    state = MAIN_MENU
 
-    return state
+    return MAIN_MENU
