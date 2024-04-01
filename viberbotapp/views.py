@@ -12,6 +12,8 @@ from viberbot import Api
 
 from environs import Env
 
+from viberbotapp.keyboards import main_menu_keyboard, choose_MRO_keyboard, \
+    choose_address_keyboard
 from viberbotapp.models import Person, Mro
 from time import sleep
 
@@ -73,7 +75,8 @@ def webhook(request):
             user.context = mro_name
         if state == MAIN_MENU:
             viber.send_messages(chat_id, [
-                TextMessage(text='Главное меню. Выберите раздел')
+                TextMessage(text='Главное меню. Выберите раздел'),
+                main_menu_keyboard()
             ])
         user.state = state
         user.save()
@@ -94,30 +97,31 @@ def handle_start(chat_id):
             "и получить контактную информацию."
         )
     ])
-    state = MAIN_MENU
 
-    return state
+    return MAIN_MENU
 
 
 def handle_main_menu(message, chat_id):
-    if message.text.lower() == 'передать показания':  # добавить проверку наличия избранных счетов
+    user_message = message.text.lower()
+    if 'показания' in user_message:  # добавить проверку наличия избранных счетов
         viber.send_messages(chat_id, [
             TextMessage(text='Введите лицевой счёт')
         ])
         state = SUBMIT_READINGS
-    elif message.text.lower() == 'информация по прибору учета':  # добавить проверку наличия избранных счетов
+    elif 'прибор' in user_message:  # добавить проверку наличия избранных счетов
         viber.send_messages(chat_id, [
             TextMessage(text='Введите лицевой счёт')
         ])
         state = METER_INFO
-    elif message.text.lower() == 'мои лицевые счета':  # добавить условие, что избранные счета вообще существуют
+    elif 'счета' in user_message or 'мои' in user_message:  # добавить условие, что избранные счета вообще существуют
         viber.send_messages(chat_id, [
             TextMessage(text='Ваши лицевые счета:')
         ])
         state = FAVORITES
-    elif message.text.lower() == 'контакты и режим работы':
+    elif 'контакты' in user_message:
         viber.send_messages(chat_id, [
-            TextMessage(text='Выберите МРО')
+            TextMessage(text='Выберите МРО'),
+            choose_MRO_keyboard()
         ])
         state = CONTACT_INFO
     else:
@@ -187,10 +191,12 @@ def contact_info(message, chat_id):
                 )
             ])
             if mro.addresses.count() > 0:
+                addresses = [str(i + 1) for i in range(mro.addresses.count())]
                 viber.send_messages(chat_id, [
                     TextMessage(
                         text="Выберите номер удобного для Вас МРО в меню снизу"
-                    )
+                    ),
+                    choose_address_keyboard(addresses)
                 ])
                 return CONTACT_INFO, mro.name
         elif 'меню' in message.text.lower():
