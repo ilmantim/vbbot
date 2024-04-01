@@ -68,6 +68,10 @@ def webhook(request):
             state = favorites(chat_id)
         elif state == CONTACT_INFO:
             state = contact_info(message, chat_id)
+        if state == MAIN_MENU:
+            viber.send_messages(chat_id, [
+                TextMessage(text='Главное меню. Выберите раздел')
+            ])
         user.state = state
         user.save()
 
@@ -131,6 +135,7 @@ def handle_main_menu(message, chat_id):
 
 
 def submit_readings(chat_id):
+    # сюда переносим логику из бота тг
     viber.send_messages(chat_id, [
         TextMessage(
             text=
@@ -142,6 +147,7 @@ def submit_readings(chat_id):
 
 
 def meter_info(chat_id):
+    # сюда переносим логику из бота тг
     viber.send_messages(chat_id, [
         TextMessage(
             text=
@@ -153,6 +159,7 @@ def meter_info(chat_id):
 
 
 def favorites(chat_id):
+    # сюда переносим логику из бота тг
     viber.send_messages(chat_id, [
         TextMessage(
             text=
@@ -161,6 +168,7 @@ def favorites(chat_id):
     ])
     state = MAIN_MENU
     return state
+
 
 
 def contact_info(message, chat_id):
@@ -177,7 +185,6 @@ def contact_info(message, chat_id):
                 (технический перерыв с 13:00 до 14:00)"""
             )
         ])
-        state = MAIN_MENU
     elif 'чебоксарское' in message.text.lower():  # добавить проверку наличия избранных счетов
         viber.send_messages(chat_id, [
             TextMessage(
@@ -187,11 +194,12 @@ def contact_info(message, chat_id):
                 3 — 428000, Чувашская Республика, г. Чебоксары, Эгерский б-р, д. 33б"""
             )
         ])
-        state = MAIN_MENU
+    elif 'меню' in message.text.lower():
+        pass
     else:
         viber.send_messages(chat_id, [
             TextMessage(text='Не понял команду. Давайте начнем сначала.')
         ])
-        state = MAIN_MENU
+    state = MAIN_MENU
 
     return state
