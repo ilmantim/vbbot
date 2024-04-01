@@ -18,7 +18,7 @@ from environs import Env
 
 env = Env()
 env.read_env()
-url = env('NGROK')
+url = env('HOOK')
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)

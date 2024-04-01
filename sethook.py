@@ -5,7 +5,7 @@ from environs import Env
 env = Env()
 env.read_env()
 vb_token = env.str('VB_TOKEN')
-url = env('NGROK')
+url = env('HOOK')
 
 hook = 'https://chatapi.viber.com/pa/set_webhook'
 headers = {'X-Viber-Auth-Token': vb_token}
