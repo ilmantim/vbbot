@@ -27,3 +27,22 @@ class Mro(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Address(models.Model):
+    name = models.TextField(
+        verbose_name='детализированная инфа',
+    )
+    department = models.ForeignKey(
+        Mro,
+        verbose_name='связь с МРО',
+        on_delete=models.CASCADE,
+        related_name='addresses',
+        null=True
+    )
+    num = models.IntegerField(
+        verbose_name='номер кнопки',
+    )
+
+    def __str__(self):
+        return self.name
