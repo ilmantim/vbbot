@@ -1,8 +1,8 @@
 import logging
 
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from django.views.decorators.http import require_POST
 from viberbot.api.viber_requests import ViberMessageRequest
 
 from viberbotapp.bot_config import viber
@@ -27,7 +27,7 @@ START, MAIN_MENU, SUBMIT_READINGS, METER_INFO, FAVORITES, CONTACT_INFO = range(
     6)
 
 
-@api_view(['POST'])
+@require_POST
 @csrf_exempt
 def webhook(request):
     post_data = request.body.decode('utf-8')
@@ -39,7 +39,7 @@ def webhook(request):
     ):
         message_handler(viber_request)
 
-    return Response(status=200)
+    return HttpResponse(status=200)
 
 
 def message_handler(viber_request):
