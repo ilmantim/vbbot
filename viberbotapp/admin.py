@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from viberbotapp.models import Mro, Person
+from viberbotapp.models import Mro, Person, Bill
 
 
 @admin.register(Mro)
@@ -10,4 +10,9 @@ class MroAdmin(admin.ModelAdmin):
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Bill)
+class BillAdmin(admin.ModelAdmin):
     pass

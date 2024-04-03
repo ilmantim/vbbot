@@ -51,7 +51,7 @@ def message_handler(viber_request):
     elif state == MAIN_MENU:
         state = handle_main_menu(message, chat_id)
     elif state == SUBMIT_READINGS:
-        state = submit_readings(chat_id)
+        state = submit_readings(message, chat_id)
     elif state == METER_INFO:
         state, bill_value = meter_info(message, chat_id)
         if bill_value:

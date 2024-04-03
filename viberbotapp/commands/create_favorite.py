@@ -1,3 +1,6 @@
+from viberbotapp.bot_config import METER_INFO, SUBMIT_READINGS, MAIN_MENU
+from viberbotapp.commands.meter_info import meter_info
+from viberbotapp.commands.submit_readings import submit_readings
 from viberbotapp.models import Favorite, Person, Bill
 
 
@@ -11,4 +14,11 @@ def create_favorite(message, chat_id):
     if user_message == 'Да':
         Favorite.objects.create(person=user, bill=bill)
 
-    return user.prev_step
+    if user.prev_step == METER_INFO:
+        step, context = meter_info(message, chat_id)
+    elif user.prev_step == SUBMIT_READINGS:
+        step, context = submit_readings(message, chat_id)
+    else:
+        step = MAIN_MENU
+
+    return step
