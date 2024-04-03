@@ -42,6 +42,15 @@ def message_handler(viber_request):
     state = user.state
     chat_id = user.chat_id
     message = viber_request.message
+    if user.favorites.count() > 0:
+        bills = True
+        user_bills = [str(favorite.bill.value) for favorite in
+                      user.favorites.all()]
+        all_bills = '\n'.join(user_bills)
+    else:
+        bills = False
+        user_bills = []
+        all_bills = ''
     print('Сейчас такой номер стейта: ', state)
     print('Сейчас такое сообщение: ', message)
     print('Сейчас такое id: ', chat_id)
@@ -49,7 +58,7 @@ def message_handler(viber_request):
     if state == START:
         state = handle_start(chat_id)
     elif state == MAIN_MENU:
-        state = handle_main_menu(message, chat_id)
+        state = handle_main_menu(message, chat_id, all_bills)
     elif state == SUBMIT_READINGS:
         state = submit_readings(message, chat_id)
     elif state == METER_INFO:
@@ -57,7 +66,7 @@ def message_handler(viber_request):
         if bill_value:
             user.context = bill_value
     elif state == FAVORITES:
-        state = favorites(chat_id)
+        state = favorites(message, chat_id, user_bills)
     elif state == CONTACT_INFO:
         state, mro_name = contact_info(message, chat_id)
         user.context = mro_name
@@ -66,6 +75,6 @@ def message_handler(viber_request):
     elif state == CREATE_FAVORITE:
         state = create_favorite(message, chat_id)
     if state == MAIN_MENU:
-        choose_section(chat_id)
+        choose_section(chat_id, bills)
     user.state = state
     user.save()

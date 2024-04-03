@@ -1,12 +1,12 @@
+from django.utils import timezone
 from viberbot.api.messages import TextMessage
 
 from viberbotapp.bot_config import viber, MAIN_MENU, METER_INFO, FIND_BILL, \
-    CREATE_FAVORITE, logger
-from viberbotapp.commands.main_menu import send_fallback, handle_find_bill_info
-from viberbotapp.commands.retrieve_bill_info import retrieve_bill_info
-from viberbotapp.models import Person, Bill, Device, Rate, Favorite
+    CREATE_FAVORITE, logger, SUBMIT_READINGS
 
-from django.utils import timezone
+from viberbotapp.commands.retrieve_bill_info import retrieve_bill_info
+from viberbotapp.commands.show_bill import show_bill
+from viberbotapp.models import Person, Bill, Device, Rate, Favorite
 
 
 def find_bill(message, chat_id):
@@ -50,9 +50,12 @@ def find_bill(message, chat_id):
                 )
                 user_bills = Favorite.objects.filter(person=user)
                 if user_bills.filter(bill__value=bill_value).exists():
-                    ################################
-                    pass
-                    state = MAIN_MENU
+                    if user.prev_step == METER_INFO:
+                        state = show_bill(chat_id)
+                    elif user.prev_step == SUBMIT_READINGS:
+                        state = MAIN_MENU
+                    else:
+                        state = MAIN_MENU
                 else:
                     bill = Bill.objects.get(value=bill_value)
                     device = bill.devices.first()

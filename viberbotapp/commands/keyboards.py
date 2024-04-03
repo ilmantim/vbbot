@@ -1,7 +1,7 @@
 from viberbot.api.messages import KeyboardMessage
 
 
-def main_menu_keyboard(bills=False):
+def main_menu_keyboard(bills):
     keyboard = {
         "Type": "keyboard",
         "Buttons": [
@@ -135,6 +135,69 @@ def choose_address_keyboard(addresses):
                 "BgColor": "#ae9ef4",
                 "Text": "<font color='#e5e1ff'><b>Главное меню</b></font>",
             }
+        ]
+    }
+    keyboard_message = KeyboardMessage(
+        keyboard=keyboard,
+        min_api_version=6
+    )
+    return keyboard_message
+
+
+def show_bills_keyboard():
+    keyboard = {
+        "Type": "keyboard",
+        "Buttons": [
+            {
+                "ActionType": "reply",
+                "ActionBody": "Удалить ЛС из избранного",
+                "BgColor": "#ae9ef4",
+                "Text": "<font color='#e5e1ff'><b>Удалить ЛС из избранного</b></font>",
+            },
+            {
+                "ActionType": "reply",
+                "ActionBody": "Главное меню",
+                "BgColor": "#ae9ef4",
+                "Text": "<font color='#e5e1ff'><b>Главное меню</b></font>",
+            },
+        ]
+    }
+    keyboard_message = KeyboardMessage(
+        keyboard=keyboard,
+        min_api_version=6
+    )
+    return keyboard_message
+
+
+def delete_bills_keyboard(info):
+    keyboard = {
+        "Type": "keyboard",
+        "Buttons": [
+            {
+                "ActionType": "reply",
+                "ActionBody": f"{i}",
+                "BgColor": "#ae9ef4",
+                "Text": f"<font color='#e5e1ff'><b>{i}</b></font>",
+            }
+            for i in info
+        ]
+        +
+        [
+            {
+                "ActionType": "reply",
+                "ActionBody": "Назад",
+                "BgColor": "#ae9ef4",
+                "Text": "<font color='#e5e1ff'><b>Назад</b></font>",
+            }
+        ]
+        +
+        [
+             {
+                 "ActionType": "reply",
+                 "ActionBody": "Главное меню",
+                 "BgColor": "#ae9ef4",
+                 "Text": "<font color='#e5e1ff'><b>Главное меню</b></font>",
+             }
         ]
     }
     keyboard_message = KeyboardMessage(
