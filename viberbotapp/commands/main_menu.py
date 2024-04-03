@@ -1,11 +1,11 @@
 from viberbot.api.messages import TextMessage
 
-from viberbotapp.bot_config import viber
+from viberbotapp.bot_config import viber, SUBMIT_READINGS, METER_INFO, \
+    FAVORITES, CONTACT_INFO, MAIN_MENU
 from viberbotapp.commands.keyboards import choose_MRO_keyboard, \
     main_menu_keyboard
 
-START, MAIN_MENU, SUBMIT_READINGS, METER_INFO, FAVORITES, CONTACT_INFO = range(
-    6)
+
 
 
 def handle_main_menu(message, chat_id):
@@ -32,10 +32,7 @@ def handle_main_menu(message, chat_id):
         ])
         state = CONTACT_INFO
     else:
-        viber.send_messages(chat_id, [
-            TextMessage(text='Не понял команду. Давайте начнем сначала.')
-        ])
-        state = MAIN_MENU
+        state = send_fallback(chat_id)
 
     return state
 
@@ -62,3 +59,21 @@ def choose_section(chat_id):
         TextMessage(text='Главное меню. Выберите раздел'),
         main_menu_keyboard()
     ])
+
+
+def send_fallback(chat_id):
+    viber.send_messages(chat_id, [
+        TextMessage(text='Не понял команду. Давайте начнем сначала.')
+    ])
+    return MAIN_MENU
+
+
+def handle_find_bill_info(chat_id):
+    viber.send_messages(chat_id, [
+        TextMessage(
+            text=
+            "Лицевой счёт указан в верхней части квитанции (извещение) "
+            "рядом с Вашей фамилией \nВведите лицевой счет:"
+        )
+    ])
+    return MAIN_MENU

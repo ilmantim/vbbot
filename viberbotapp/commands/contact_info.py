@@ -1,12 +1,11 @@
 from viberbot.api.messages import TextMessage
 
-from viberbotapp.bot_config import viber
+from viberbotapp.bot_config import viber, MAIN_MENU, CONTACT_INFO
 from viberbotapp.commands.keyboards import choose_address_keyboard
 from viberbotapp.models import Person, Mro
 
 
-START, MAIN_MENU, SUBMIT_READINGS, METER_INFO, FAVORITES, CONTACT_INFO = range(
-    6)
+
 
 
 def contact_info(message, chat_id):

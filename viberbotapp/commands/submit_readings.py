@@ -1,10 +1,6 @@
 from viberbot.api.messages import TextMessage
 
-from viberbotapp.bot_config import viber
-
-
-START, MAIN_MENU, SUBMIT_READINGS, METER_INFO, FAVORITES, CONTACT_INFO = range(
-    6)
+from viberbotapp.bot_config import viber, MAIN_MENU
 
 
 def submit_readings(chat_id):

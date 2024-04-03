@@ -19,6 +19,11 @@ class Person(models.Model):
         null=True,
         blank=True
     )
+    prev_step = models.PositiveIntegerField(
+        verbose_name='Предыдущий шаг',
+        null=True,
+        blank=True
+    )
 
 
 class Mro(models.Model):
@@ -91,19 +96,24 @@ class Device(models.Model):
 class Rate(models.Model):
     title = models.CharField(
         'Обозначение',
-        max_length=20
+        max_length=20,
+        null=True
     )
     id_tariff = models.IntegerField(
-        verbose_name='ID тарифа'
+        verbose_name='ID тарифа',
+        null=True
     )
     id_indication = models.IntegerField(
-        verbose_name='ID показания'
+        verbose_name='ID показания',
+        null=True
     )
     registration_date = models.DateTimeField(
-        verbose_name='Дата приёма'
+        verbose_name='Дата приёма',
+        null=True
     )
     readings = models.IntegerField(
-        verbose_name='Показания счетчика'
+        verbose_name='Показания счетчика',
+        null=True
     )
     device = models.ForeignKey(
         Device,
@@ -112,7 +122,8 @@ class Rate(models.Model):
         related_name='rates'
     )
     cost = models.FloatField(
-        verbose_name='Стоимость'
+        verbose_name='Стоимость',
+        null=True
     )
 
 

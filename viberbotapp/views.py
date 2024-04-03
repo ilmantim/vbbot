@@ -5,26 +5,18 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from viberbot.api.viber_requests import ViberMessageRequest
 
-from viberbotapp.bot_config import viber
+from viberbotapp.bot_config import viber, START, MAIN_MENU, SUBMIT_READINGS, \
+    METER_INFO, FAVORITES, CONTACT_INFO, FIND_BILL, CREATE_FAVORITE
 from viberbotapp.commands.contact_info import contact_info
+from viberbotapp.commands.create_favorite import create_favorite
 from viberbotapp.commands.favorites import favorites
+from viberbotapp.commands.find_bill import find_bill
 from viberbotapp.commands.main_menu import handle_main_menu, handle_start, \
     choose_section
 from viberbotapp.commands.meter_info import meter_info
 from viberbotapp.commands.submit_readings import submit_readings
 from viberbotapp.models import Person
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-
-
-START, MAIN_MENU, SUBMIT_READINGS, METER_INFO, FAVORITES, CONTACT_INFO = range(
-    6)
 
 
 @require_POST
@@ -61,12 +53,18 @@ def message_handler(viber_request):
     elif state == SUBMIT_READINGS:
         state = submit_readings(chat_id)
     elif state == METER_INFO:
-        state = meter_info(chat_id)
+        state, bill_value = meter_info(message, chat_id)
+        if bill_value:
+            user.context = bill_value
     elif state == FAVORITES:
         state = favorites(chat_id)
     elif state == CONTACT_INFO:
         state, mro_name = contact_info(message, chat_id)
         user.context = mro_name
+    elif state == FIND_BILL:
+        state, bill_value = find_bill(message, chat_id)
+    elif state == CREATE_FAVORITE:
+        state = create_favorite(message, chat_id)
     if state == MAIN_MENU:
         choose_section(chat_id)
     user.state = state

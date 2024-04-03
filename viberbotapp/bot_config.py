@@ -1,8 +1,24 @@
+import logging
+
 from environs import Env
 from viberbot import BotConfiguration, Api
 
 env = Env()
 env.read_env()
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+
+START, MAIN_MENU, SUBMIT_READINGS, METER_INFO, FAVORITES, CONTACT_INFO, FIND_BILL, CREATE_FAVORITE = range(
+    8)
+
 
 vb_token = env.str('VB_TOKEN')
 
