@@ -3,10 +3,8 @@ from viberbot.api.messages import TextMessage
 
 from viberbotapp.bot_config import viber, MAIN_MENU, METER_INFO, FIND_BILL, \
     CREATE_FAVORITE, logger, SUBMIT_READINGS
-from viberbotapp.commands.keyboards import yes_no_keyboard, \
-    submit_readings_and_get_meter_keyboard
+from viberbotapp.commands.keyboards import yes_no_keyboard
 from viberbotapp.commands.main_menu import send_fallback
-
 from viberbotapp.commands.retrieve_bill_info import retrieve_bill_info
 from viberbotapp.commands.show_bill import show_bill
 from viberbotapp.models import Person, Bill, Device, Rate, Favorite
