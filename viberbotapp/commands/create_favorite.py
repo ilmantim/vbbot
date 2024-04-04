@@ -12,7 +12,7 @@ def create_favorite(message, chat_id):
     bill = Bill.objects.get(value=user.context)
     bill.persons.add(user)
     if user_message == 'Да':
-        Favorite.objects.create(person=user, bill=bill)
+        fav, created = Favorite.objects.get_or_create(person=user, bill=bill)
 
     if user.prev_step == METER_INFO:
         step, context = meter_info(message, chat_id)

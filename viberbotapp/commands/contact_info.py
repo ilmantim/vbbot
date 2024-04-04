@@ -5,9 +5,6 @@ from viberbotapp.commands.keyboards import choose_address_keyboard
 from viberbotapp.models import Person, Mro
 
 
-
-
-
 def contact_info(message, chat_id):
     user_message = message.text.title()
     user = Person.objects.get(chat_id=chat_id)

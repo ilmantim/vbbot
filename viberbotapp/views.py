@@ -1,6 +1,5 @@
-import logging
-
 from django.http import HttpResponse
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from viberbot.api.viber_requests import ViberMessageRequest
@@ -18,17 +17,16 @@ from viberbotapp.commands.submit_readings import submit_readings
 from viberbotapp.models import Person
 
 
-
 @require_POST
 @csrf_exempt
 def webhook(request):
     post_data = request.body.decode('utf-8')
     viber_request = viber.parse_request(post_data)
 
-    if isinstance(viber_request, ViberMessageRequest) and (
+    if (isinstance(viber_request, ViberMessageRequest) and (
             viber_request.sender.id == '2qimAURso5+5B7yav4ZDIA==' or
             viber_request.sender.id == 'cn+6wVEyC20yMu9iGETumw=='
-    ):
+    )) and check_time(viber_request.timestamp):
         message_handler(viber_request)
 
     return HttpResponse(status=200)
@@ -43,12 +41,10 @@ def message_handler(viber_request):
     chat_id = user.chat_id
     message = viber_request.message
     if user.favorites.count() > 0:
-        bills = True
         user_bills = [str(favorite.bill.value) for favorite in
                       user.favorites.all()]
         all_bills = '\n'.join(user_bills)
     else:
-        bills = False
         user_bills = []
         all_bills = ''
     print('Сейчас такой номер стейта: ', state)
@@ -75,6 +71,22 @@ def message_handler(viber_request):
     elif state == CREATE_FAVORITE:
         state = create_favorite(message, chat_id)
     if state == MAIN_MENU:
+        if user.favorites.count() > 0:
+            bills = True
+        else:
+            bills = False
         choose_section(chat_id, bills)
     user.state = state
     user.save()
+
+
+def check_time(timestamp):
+    current_time_ms = int(round(timezone.now().timestamp() * 1000))
+    print('ЭТО ВРЕМЯ РЕКВЕСТА', timestamp)
+    print('ЭТО ВРЕМЯ СЕЙЧАС', current_time_ms)
+    diff_ms = abs(current_time_ms - timestamp)
+    diff_sec = diff_ms / 1000
+    if diff_sec <= 5:
+        return True
+    else:
+        return False
