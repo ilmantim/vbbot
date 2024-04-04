@@ -3,7 +3,8 @@ from viberbot.api.messages import TextMessage
 from viberbotapp.bot_config import viber, SUBMIT_READINGS, METER_INFO, \
     FAVORITES, CONTACT_INFO, MAIN_MENU
 from viberbotapp.commands.keyboards import choose_MRO_keyboard, \
-    main_menu_keyboard, show_bills_keyboard
+    main_menu_keyboard, show_bills_keyboard, \
+    submit_readings_and_get_meter_keyboard
 
 
 def handle_main_menu(message, chat_id, bills):
@@ -15,12 +16,14 @@ def handle_main_menu(message, chat_id, bills):
         state = SUBMIT_READINGS
     elif 'прибор' in user_message:  # добавить проверку наличия избранных счетов
         viber.send_messages(chat_id, [
-            TextMessage(text='Введите лицевой счёт')
+            TextMessage(text='Введите лицевой счёт'),
+            submit_readings_and_get_meter_keyboard(bills)
         ])
         state = METER_INFO
     elif 'счета' in user_message or 'мои' in user_message:
+        all_bills = '\n'.join(bills)
         viber.send_messages(chat_id, [
-            TextMessage(text=f'Ваши лицевые счета:\n{bills}'),
+            TextMessage(text=f'Ваши лицевые счета:\n{all_bills}'),
             TextMessage(text='Выберите нужный пункт в меню снизу.'),
             show_bills_keyboard(),
         ])
@@ -77,3 +80,9 @@ def handle_find_bill_info(chat_id):
         )
     ])
     return MAIN_MENU
+
+
+def send_message(text, chat_id):
+    viber.send_messages(chat_id, [
+        TextMessage(text=text)
+    ])

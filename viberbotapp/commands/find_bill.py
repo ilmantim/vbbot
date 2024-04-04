@@ -3,6 +3,9 @@ from viberbot.api.messages import TextMessage
 
 from viberbotapp.bot_config import viber, MAIN_MENU, METER_INFO, FIND_BILL, \
     CREATE_FAVORITE, logger, SUBMIT_READINGS
+from viberbotapp.commands.keyboards import yes_no_keyboard, \
+    submit_readings_and_get_meter_keyboard
+from viberbotapp.commands.main_menu import send_fallback
 
 from viberbotapp.commands.retrieve_bill_info import retrieve_bill_info
 from viberbotapp.commands.show_bill import show_bill
@@ -10,8 +13,8 @@ from viberbotapp.models import Person, Bill, Device, Rate, Favorite
 
 
 def find_bill(message, chat_id):
-    user_message = message.text.title()
-    if user_message == 'Нет':
+    user_message = message.text.lower()
+    if user_message == 'нет':
         viber.send_messages(chat_id, [
             TextMessage(
                 text=
@@ -21,20 +24,23 @@ def find_bill(message, chat_id):
             )
         ])
         state = MAIN_MENU
-    elif user_message == 'Да':
+    elif user_message == 'да':
         viber.send_messages(chat_id, [
             TextMessage(
                 text=
                 "Вы хотите добавить этот лицевой счёт в избранное?"
-            )
+            ),
+            yes_no_keyboard()
         ])
         state = CREATE_FAVORITE
+    elif 'меню' in user_message:
+        state = MAIN_MENU
     else:
         try:
             response_bill = retrieve_bill_info(user_message)
         except Exception as e:
             logger.info(f'Exception occurred:{e}')
-            state = MAIN_MENU
+            state = send_fallback(chat_id)
         else:
             if response_bill and user_message in response_bill.values():
                 bill_value = create_bill(user_message, response_bill)
@@ -63,7 +69,8 @@ def find_bill(message, chat_id):
                         TextMessage(
                             text=
                             f'Адрес объекта - {device.address}?'
-                        )
+                        ),
+                        yes_no_keyboard()
                     ])
                     state = FIND_BILL
                 return state, bill_value

@@ -82,7 +82,7 @@ def choose_MRO_keyboard():
                 "ActionBody": "Цивильское",
                 "BgColor": "#ae9ef4",
                 "Text": "<font color='#e5e1ff'><b>Цивильское МРО</b></font>",
-            },{
+            }, {
                 "ActionType": "reply",
                 "ActionBody": "Шумерлинское",
                 "BgColor": "#ae9ef4",
@@ -119,23 +119,23 @@ def choose_address_keyboard(addresses):
     keyboard = {
         "Type": "keyboard",
         "Buttons": [
-            {
-                "ActionType": "reply",
-                "ActionBody": f"{i}",
-                "BgColor": "#ae9ef4",
-                "Text": f"<font color='#e5e1ff'><b>{i}</b></font>",
-            }
-            for i in addresses
-        ]
-        +
-        [
-            {
-                "ActionType": "reply",
-                "ActionBody": "Главное меню",
-                "BgColor": "#ae9ef4",
-                "Text": "<font color='#e5e1ff'><b>Главное меню</b></font>",
-            }
-        ]
+                       {
+                           "ActionType": "reply",
+                           "ActionBody": f"{i}",
+                           "BgColor": "#ae9ef4",
+                           "Text": f"<font color='#e5e1ff'><b>{i}</b></font>",
+                       }
+                       for i in addresses
+                   ]
+                   +
+                   [
+                       {
+                           "ActionType": "reply",
+                           "ActionBody": "Главное меню",
+                           "BgColor": "#ae9ef4",
+                           "Text": "<font color='#e5e1ff'><b>Главное меню</b></font>",
+                       }
+                   ]
     }
     keyboard_message = KeyboardMessage(
         keyboard=keyboard,
@@ -173,31 +173,109 @@ def delete_bills_keyboard(info):
     keyboard = {
         "Type": "keyboard",
         "Buttons": [
+                       {
+                           "ActionType": "reply",
+                           "ActionBody": f"{i}",
+                           "BgColor": "#ae9ef4",
+                           "Text": f"<font color='#e5e1ff'><b>{i}</b></font>",
+                       }
+                       for i in info
+                   ]
+                   +
+                   [
+                       {
+                           "ActionType": "reply",
+                           "ActionBody": "Назад",
+                           "BgColor": "#ae9ef4",
+                           "Text": "<font color='#e5e1ff'><b>Назад</b></font>",
+                       },
+                       {
+                           "ActionType": "reply",
+                           "ActionBody": "Главное меню",
+                           "BgColor": "#ae9ef4",
+                           "Text": "<font color='#e5e1ff'><b>Главное меню</b></font>",
+                       }
+                   ]
+    }
+    keyboard_message = KeyboardMessage(
+        keyboard=keyboard,
+        min_api_version=6
+    )
+    return keyboard_message
+
+
+def submit_readings_and_get_meter_keyboard(info):
+    buttons = [
+                {
+                    "ActionType": "reply",
+                    "ActionBody": "Как узнать лицевой счёт",
+                    "BgColor": "#ae9ef4",
+                    "Text": "<font color='#e5e1ff'><b>Как узнать лицевой счёт</b></font>",
+                },
+                {
+                    "ActionType": "reply",
+                    "ActionBody": "Главное меню",
+                    "BgColor": "#ae9ef4",
+                    "Text": "<font color='#e5e1ff'><b>Главное меню</b></font>",
+                }
+            ]
+    keyboard = {
+        "Type": "keyboard",
+        "Buttons": buttons
+    }
+    if info:
+        keyboard = {
+            "Type": "keyboard",
+            "Buttons": [
+                           {
+                               "ActionType": "reply",
+                               "ActionBody": f"{i}",
+                               "BgColor": "#ae9ef4",
+                               "Text": f"<font color='#e5e1ff'><b>{i}</b></font>",
+                           }
+                           for i in info
+                       ]
+                       +
+                       [
+                           {
+                               "ActionType": "reply",
+                               "ActionBody": "Ввести другой",
+                               "BgColor": "#ae9ef4",
+                               "Text": "<font color='#e5e1ff'><b>Ввести другой</b></font>",
+                           }
+                       ]
+                       +
+                       buttons
+        }
+    keyboard_message = KeyboardMessage(
+        keyboard=keyboard,
+        min_api_version=6
+    )
+    return keyboard_message
+
+
+def yes_no_keyboard():
+    keyboard = {
+        "Type": "keyboard",
+        "Buttons": [
             {
                 "ActionType": "reply",
-                "ActionBody": f"{i}",
+                "ActionBody": "Да",
                 "BgColor": "#ae9ef4",
-                "Text": f"<font color='#e5e1ff'><b>{i}</b></font>",
-            }
-            for i in info
-        ]
-        +
-        [
+                "Text": "<font color='#e5e1ff'><b>Да</b></font>",
+            },
             {
                 "ActionType": "reply",
-                "ActionBody": "Назад",
+                "ActionBody": "Нет",
                 "BgColor": "#ae9ef4",
-                "Text": "<font color='#e5e1ff'><b>Назад</b></font>",
+                "Text": "<font color='#e5e1ff'><b>Нет</b></font>",
+            },
+            {
+                "ActionType": "reply",
+                "ActionBody": "Главное меню",
+                "BgColor": "#ae9ef4",
+                "Text": "<font color='#e5e1ff'><b>Главное меню</b></font>",
             }
-        ]
-        +
-        [
-             {
-                 "ActionType": "reply",
-                 "ActionBody": "Главное меню",
-                 "BgColor": "#ae9ef4",
-                 "Text": "<font color='#e5e1ff'><b>Главное меню</b></font>",
-             }
         ]
     }
     keyboard_message = KeyboardMessage(
