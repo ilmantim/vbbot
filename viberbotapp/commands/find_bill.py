@@ -48,7 +48,7 @@ def find_bill(message, chat_id):
                 user_bills = Favorite.objects.filter(person=user)
                 if user_bills.filter(bill__value=bill_value).exists():
                     if user.prev_step == METER_INFO:
-                        state = show_bill(chat_id)
+                        state = show_bill(user_message, chat_id)
                     elif user.prev_step == SUBMIT_READINGS:
                         state = MAIN_MENU
                     else:

@@ -3,11 +3,14 @@ from viberbotapp.commands.helper import send_message
 from viberbotapp.models import Person, Bill
 
 
-def show_bill(chat_id):
+def show_bill(message, chat_id):
     user, created = Person.objects.get_or_create(
         chat_id=chat_id
     )
-    bill = Bill.objects.get(value=int(user.context))
+    if message.isdigit():
+        bill = Bill.objects.get(value=int(message))
+    else:
+        bill = Bill.objects.get(value=int(user.context))
     devices = bill.devices.all()
     for device_here in devices:
         device_title = device_here.device_title
