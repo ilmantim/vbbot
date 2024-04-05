@@ -27,14 +27,14 @@ def choose_MRO_keyboard():
     keyboard = {
         "Type": "keyboard",
         "Buttons": [
-            get_button("Чебоксарское"),
-            get_button("Алатырское"),
-            get_button("Батыревское"),
-            get_button("Канашское"),
-            get_button("Новочебоксарское"),
-            get_button("Цивильское"),
-            get_button("Шумерлинское"),
-            get_button("Ядринское"),
+            get_button("Чебоксарское", "Чебоксарское МРО"),
+            get_button("Алатырское", "Алатырское МРО"),
+            get_button("Батыревское", "Батыревское МРО"),
+            get_button("Канашское", "Канашское МРО"),
+            get_button("Новочебоксарское", "Новочебоксарское МРО"),
+            get_button("Цивильское", "Цивильское МРО"),
+            get_button("Шумерлинское", "Шумерлинское МРО"),
+            get_button("Ядринское", "Ядринское МРО"),
             get_button("Управление"),
             get_button("Главное меню")
         ]
@@ -126,12 +126,14 @@ def yes_no_keyboard():
     return keyboard_message
 
 
-def get_button(text, background_color='#ae9ef4', font_color='#e5e1ff'):
+def get_button(text, text_2=None, background_color='#ae9ef4', font_color='#e5e1ff'):
+    if not text_2:
+        text_2 = text
     button = {
         "ActionType": "reply",
         "ActionBody": f"{text}",
         "BgColor": f"{background_color}",
-        "Text": f"<font color={font_color}><b>{text}</b></font>",
+        "Text": f"<font color={font_color}><b>{text_2}</b></font>",
     }
 
     return button
