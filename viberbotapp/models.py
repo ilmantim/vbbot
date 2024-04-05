@@ -19,6 +19,11 @@ class Person(models.Model):
         null=True,
         blank=True
     )
+    details = models.TextField(
+        verbose_name='Второй контекст юзера',
+        null=True,
+        blank=True
+    )
     prev_step = models.PositiveIntegerField(
         verbose_name='Предыдущий шаг',
         null=True,

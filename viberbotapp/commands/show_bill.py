@@ -1,8 +1,12 @@
-from viberbotapp.bot_config import MAIN_MENU, METER_INFO, SUBMIT_READINGS, \
-    INPUT_READINGS
-from viberbotapp.commands.helper import send_message, send_fallback
-from viberbotapp.models import Person, Bill, Rate
 import pytz
+import requests
+
+from viberbotapp.bot_config import MAIN_MENU, METER_INFO, SUBMIT_READINGS, \
+    INPUT_READINGS, logger
+from viberbotapp.commands.helper import send_message, send_fallback
+from viberbotapp.commands.retrieve_bill_info import API_BASE_URL
+from viberbotapp.models import Person, Bill, Rate
+
 
 def show_bill(message, chat_id):
     user, created = Person.objects.get_or_create(
@@ -39,26 +43,29 @@ def show_bill(message, chat_id):
         state = MAIN_MENU
     elif user.prev_step == SUBMIT_READINGS:
         rates_ids = [
-            rate.id for device in devices for rate in
+            str(rate.id) for device in devices for rate in
             device.rates.all()
         ]
-        user.context = ','.join(rates_ids)
-        user.save()
-        state = MAIN_MENU
+        print('ЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖ', rates_ids)
+        print('ЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁ', ','.join(rates_ids))
+        context = ','.join(rates_ids)
+        state, context = show_rate(chat_id, context)
+        return state, context
     else:
         state = send_fallback(chat_id)
 
     return state
 
 
-def show_rate(chat_id):
+def show_rate(chat_id, context):
     user, created = Person.objects.get_or_create(
         chat_id=chat_id
     )
-    if not user.context:
+    if not context:
+        send_readings(chat_id)
         state = MAIN_MENU
     else:
-        rates_str = user.context
+        rates_str = context
         rates = rates_str.split(',')
         rate = Rate.objects.get(id=rates[0])
         device = rate.device
@@ -84,13 +91,37 @@ def show_rate(chat_id):
             f'-----------------------------------\n',
             'Введите показание:'
         )
-        rates.pop(0)
-        if rates:
-            user.context = ','.join(rates)
-            user.save()
-            state = INPUT_READINGS
+        return INPUT_READINGS, context
+
+    return state, None
+
+
+def send_readings(chat_id):
+    user, created = Person.objects.get_or_create(
+        chat_id=chat_id
+    )
+    rates_str = user.details
+    rates = rates_str.split(',')
+    rates = [Rate.objects.get(id=id) for id in rates]
+    devices = list({rate.device for rate in rates})
+    data = [
+        {
+            "id_device": device.id_device,
+            "id_receiving_method": 60,
+            "id_reading_status": 6,
+            "rates": [
+                {
+                    "id_tariff": rate.id_tariff,
+                    "id_indication": rate.id_indication,
+                    "reading": rate.readings
+                } for rate in device.rates.all()
+            ]
+        } for device in devices
+    ]
+    url = f'https://{API_BASE_URL}/api/v0/cabinet/terminal/submitReadings'
+    for device_data in data:
+        response = requests.post(url, json=device_data)
+        if response.status_code == 200:
+            logger.info('Success!')
         else:
-            state = MAIN_MENU
-
-    return state
-
+            logger.info('Error: %s', str(response.status_code))

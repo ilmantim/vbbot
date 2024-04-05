@@ -53,22 +53,24 @@ def message_handler(viber_request):
         state = handle_main_menu(message, chat_id, user_bills)
     elif state == SUBMIT_READINGS or state == METER_INFO:
         if state == SUBMIT_READINGS:
-            state, bill_value = submit_readings(message, chat_id)
+            state, context = submit_readings(message, chat_id)
         else:
-            state, bill_value = meter_info(message, chat_id)
-        if bill_value:
-            user.context = bill_value
+            state, context = meter_info(message, chat_id)
+        if context:
+            user.context = context
+            user.details = context
     elif state == FAVORITES:
         state = favorites(message, chat_id, user_bills)
     elif state == CONTACT_INFO:
         state, mro_name = contact_info(message, chat_id)
         user.context = mro_name
     elif state == FIND_BILL:
-        state, bill_value = find_bill(message, chat_id)
+        state, context = find_bill(message, chat_id)
     elif state == CREATE_FAVORITE:
         state = create_favorite(message, chat_id)
     elif state == INPUT_READINGS:
-        state = input_readings(message, chat_id)
+        state, context = input_readings(message, chat_id)
+        user.context = context
     if state == MAIN_MENU:
         bills = bool(user.favorites.count())
         state = choose_section(chat_id, bills)

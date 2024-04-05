@@ -11,7 +11,8 @@ def submit_readings(message, chat_id):
         chat_id=chat_id
     )
     if user.prev_step == SUBMIT_READINGS and user_message in ['да', 'нет']:
-        state = show_bill(user_message, chat_id)
+        state, context = show_bill(user_message, chat_id)
+        return state, context
     elif user_message.isdigit():
         user.prev_step = SUBMIT_READINGS
         user.save()
