@@ -20,7 +20,7 @@ def contact_info(message, chat_id):
         return MAIN_MENU, None
     else:
         mro = Mro.objects.filter(
-            Q(name__icontains=f'{user_message} ') | Q(name='Управление')
+            Q(name__icontains=f'{user_message} ') | Q(name=user_message)
         ).first()
         if mro:
             send_message(
