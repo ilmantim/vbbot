@@ -1,5 +1,5 @@
 from viberbotapp.bot_config import METER_INFO, SUBMIT_READINGS, MAIN_MENU
-from viberbotapp.commands.main_menu import send_fallback
+from viberbotapp.commands.helper import send_fallback
 from viberbotapp.commands.meter_info import meter_info
 from viberbotapp.commands.submit_readings import submit_readings
 from viberbotapp.models import Favorite, Person, Bill

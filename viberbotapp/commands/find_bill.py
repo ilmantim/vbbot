@@ -1,10 +1,9 @@
 from django.utils import timezone
-from viberbot.api.messages import TextMessage
 
-from viberbotapp.bot_config import viber, MAIN_MENU, METER_INFO, FIND_BILL, \
+from viberbotapp.bot_config import MAIN_MENU, METER_INFO, FIND_BILL, \
     CREATE_FAVORITE, logger, SUBMIT_READINGS
+from viberbotapp.commands.helper import send_fallback, send_message
 from viberbotapp.commands.keyboards import yes_no_keyboard
-from viberbotapp.commands.main_menu import send_fallback
 from viberbotapp.commands.retrieve_bill_info import retrieve_bill_info
 from viberbotapp.commands.show_bill import show_bill
 from viberbotapp.models import Person, Bill, Device, Rate, Favorite
@@ -13,23 +12,20 @@ from viberbotapp.models import Person, Bill, Device, Rate, Favorite
 def find_bill(message, chat_id):
     user_message = message.text.lower()
     if user_message == 'нет':
-        viber.send_messages(chat_id, [
-            TextMessage(
-                text=
-                "Проверьте правильность введения номера лицевого счета.\n"
-                "Возможно, по данному адресу приборы учёта отсутствуют или закончился срок поверки.\n"
-                "Для уточнения информации обратитесь к специалисту контакт-центра"
-            )
-        ])
+        send_message(
+            chat_id,
+            "Проверьте правильность введения номера лицевого счета.\n"
+            "Возможно, по данному адресу приборы учёта отсутствуют или "
+            "закончился срок поверки.\n"
+            "Для уточнения информации обратитесь к специалисту контакт-центра"
+        )
         state = MAIN_MENU
     elif user_message == 'да':
-        viber.send_messages(chat_id, [
-            TextMessage(
-                text=
-                "Вы хотите добавить этот лицевой счёт в избранное?"
-            ),
+        send_message(
+            chat_id,
+            "Вы хотите добавить этот лицевой счёт в избранное?",
             yes_no_keyboard()
-        ])
+        )
         state = CREATE_FAVORITE
     elif 'меню' in user_message:
         state = MAIN_MENU
@@ -42,13 +38,10 @@ def find_bill(message, chat_id):
         else:
             if response_bill and user_message in response_bill.values():
                 bill_value = create_bill(user_message, response_bill)
-
-                viber.send_messages(chat_id, [
-                    TextMessage(
-                        text=
-                        "Счет успешно найден."
-                    )
-                ])
+                send_message(
+                    chat_id,
+                    "Счет успешно найден."
+                )
                 user, created = Person.objects.get_or_create(
                     chat_id=chat_id
                 )
@@ -63,26 +56,22 @@ def find_bill(message, chat_id):
                 else:
                     bill = Bill.objects.get(value=bill_value)
                     device = bill.devices.first()
-                    viber.send_messages(chat_id, [
-                        TextMessage(
-                            text=
-                            f'Адрес объекта - {device.address}?'
-                        ),
+                    send_message(
+                        chat_id,
+                        f'Адрес объекта - {device.address}?',
                         yes_no_keyboard()
-                    ])
+                    )
                     state = FIND_BILL
                 return state, bill_value
             else:
-                viber.send_messages(chat_id, [
-                    TextMessage(
-                        text=
-                        "Проверьте правильность введения номера лицевого счета.\n"
-                        "Возможно, по данному адресу приборы учёта отсутствуют "
-                        "или закончился срок поверки.\n"
-                        "Для уточнения информации обратитесь "
-                        "к специалисту контакт-центра"
-                    )
-                ])
+                send_message(
+                    chat_id,
+                    "Проверьте правильность введения номера лицевого счета.\n"
+                    "Возможно, по данному адресу приборы учёта отсутствуют "
+                    "или закончился срок поверки.\n"
+                    "Для уточнения информации обратитесь "
+                    "к специалисту контакт-центра"
+                )
                 state = MAIN_MENU
 
     return state, None

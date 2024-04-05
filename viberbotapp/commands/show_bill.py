@@ -1,6 +1,5 @@
-from viberbot.api.messages import TextMessage
-
-from viberbotapp.bot_config import viber, MAIN_MENU
+from viberbotapp.bot_config import MAIN_MENU
+from viberbotapp.commands.helper import send_message
 from viberbotapp.models import Person, Bill
 
 
@@ -21,17 +20,15 @@ def show_bill(chat_id):
         rate_info = "- Величина тарифа:\n"
         for rate_key, rate_value in rates_of_device.items():
             rate_info += f"  - {rate_key}: {rate_value}₽\n"
-        viber.send_messages(chat_id, [
-            TextMessage(
-                text=
-                f'📟 Информация о приборе учета:\n'
-                f'-----------------------------------\n'
-                f'- Лицевой счет: {bill.value}\n'
-                f'- Прибор учета: {device_title} - {modification} (№{serial_number})\n'
-                f'- Номер счетчика: {serial_number}\n'
-                f'{rate_info}'
-                f'-----------------------------------\n'
-            )
-        ])
+        send_message(
+            chat_id,
+            f'📟 Информация о приборе учета:\n'
+            f'-----------------------------------\n'
+            f'- Лицевой счет: {bill.value}\n'
+            f'- Прибор учета: {device_title} - {modification} (№{serial_number})\n'
+            f'- Номер счетчика: {serial_number}\n'
+            f'{rate_info}'
+            f'-----------------------------------\n'
+        )
 
     return MAIN_MENU

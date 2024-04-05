@@ -10,8 +10,8 @@ from viberbotapp.commands.contact_info import contact_info
 from viberbotapp.commands.create_favorite import create_favorite
 from viberbotapp.commands.favorites import favorites
 from viberbotapp.commands.find_bill import find_bill
-from viberbotapp.commands.main_menu import handle_main_menu, handle_start, \
-    choose_section
+from viberbotapp.commands.main_menu import handle_main_menu, handle_start
+from viberbotapp.commands.helper import choose_section
 from viberbotapp.commands.meter_info import meter_info
 from viberbotapp.commands.submit_readings import submit_readings
 from viberbotapp.models import Person

@@ -1,7 +1,7 @@
 from viberbotapp.bot_config import MAIN_MENU, METER_INFO
 from viberbotapp.commands.find_bill import find_bill
-from viberbotapp.commands.main_menu import send_fallback, \
-    handle_find_bill_info, send_message
+from viberbotapp.commands.helper import send_fallback, handle_find_bill_info, \
+    send_message
 from viberbotapp.commands.show_bill import show_bill
 from viberbotapp.models import Person
 
@@ -23,7 +23,7 @@ def meter_info(message, chat_id):
     elif 'меню' in user_message:
         state = MAIN_MENU
     elif 'ввести' in user_message or 'другой' in user_message:
-        send_message('Введите лицевой счёт', chat_id)
+        send_message(chat_id, 'Введите лицевой счёт')
         state = METER_INFO
     else:
         state = send_fallback(chat_id)
