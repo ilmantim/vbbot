@@ -21,9 +21,11 @@ def create_favorite(message, chat_id):
             state, context = submit_readings(message, chat_id)
         else:
             state = MAIN_MENU
+            context = None
+        return state, context
     elif 'меню' in user_message:
         state = MAIN_MENU
     else:
         state = send_fallback(chat_id)
 
-    return state
+    return state, None

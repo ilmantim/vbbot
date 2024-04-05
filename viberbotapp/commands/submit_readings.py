@@ -16,8 +16,8 @@ def submit_readings(message, chat_id):
     elif user_message.isdigit():
         user.prev_step = SUBMIT_READINGS
         user.save()
-        state, bill_value = find_bill(message, chat_id)
-        return state, bill_value
+        state, context = find_bill(message, chat_id)
+        return state, context
 ###############################################################################
     elif 'узнать' in user_message or 'счет' in user_message:
         send_message(

@@ -67,7 +67,9 @@ def message_handler(viber_request):
     elif state == FIND_BILL:
         state, context = find_bill(message, chat_id)
     elif state == CREATE_FAVORITE:
-        state = create_favorite(message, chat_id)
+        state, context = create_favorite(message, chat_id)
+        user.context = context
+        user.details = context
     elif state == INPUT_READINGS:
         state, context = input_readings(message, chat_id)
         user.context = context
