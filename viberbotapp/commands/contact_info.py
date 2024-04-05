@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from viberbotapp.bot_config import MAIN_MENU, CONTACT_INFO
 from viberbotapp.commands.helper import send_message, send_fallback
 from viberbotapp.commands.keyboards import choose_address_keyboard
@@ -17,7 +19,9 @@ def contact_info(message, chat_id):
         )
         return MAIN_MENU, None
     else:
-        mro = Mro.objects.filter(name__icontains=f'{user_message} ').first()
+        mro = Mro.objects.filter(
+            Q(name__icontains=f'{user_message} ') | Q(name='Управление')
+        ).first()
         if mro:
             send_message(
                 chat_id,
