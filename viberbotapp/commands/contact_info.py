@@ -17,7 +17,7 @@ def contact_info(message, chat_id):
         )
         return MAIN_MENU, None
     else:
-        mro = Mro.objects.filter(name__icontains=user_message).first()
+        mro = Mro.objects.filter(name__icontains=f'{user_message} ').first()
         if mro:
             send_message(
                 chat_id,
