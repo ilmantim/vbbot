@@ -11,7 +11,8 @@ def handle_main_menu(message, chat_id, bills):
     if 'показания' in user_message:  # добавить проверку наличия избранных счетов
         send_message(
             chat_id,
-            'Введите лицевой счёт'
+            'Введите лицевой счёт',
+            submit_readings_and_get_meter_keyboard(bills)
         )
         state = SUBMIT_READINGS
     elif 'прибор' in user_message:  # добавить проверку наличия избранных счетов
