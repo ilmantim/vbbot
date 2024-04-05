@@ -1,11 +1,37 @@
-from viberbotapp.bot_config import MAIN_MENU
-from viberbotapp.commands.helper import send_message
+from viberbotapp.bot_config import MAIN_MENU, SUBMIT_READINGS
+from viberbotapp.commands.find_bill import find_bill
+from viberbotapp.commands.helper import send_message, send_fallback
+from viberbotapp.commands.show_bill import show_bill
+from viberbotapp.models import Person
 
 
 def submit_readings(message, chat_id):
-    # сюда переносим логику из бота тг
-    send_message(
-        chat_id,
-        "Этот раздел находится в разбработке. Возвращаю в главное меню"
+    user_message = message.text.lower()
+    user, created = Person.objects.get_or_create(
+        chat_id=chat_id
     )
-    return MAIN_MENU
+    if user.prev_step == SUBMIT_READINGS and user_message in ['да', 'нет']:
+        state = show_bill(user_message, chat_id)
+    elif user_message.isdigit():
+        user.prev_step = SUBMIT_READINGS
+        user.save()
+        state, bill_value = find_bill(message, chat_id)
+        return state, bill_value
+###############################################################################
+    elif 'узнать' in user_message or 'счет' in user_message:
+        send_message(
+            chat_id,
+            "Лицевой счёт указан в верхней части квитанции (извещение) "
+            "рядом с Вашей фамилией",
+            "Введите лицевой счет:"
+        )
+        state = SUBMIT_READINGS
+    elif 'меню' in user_message:
+        state = MAIN_MENU
+    elif 'ввести' in user_message or 'другой' in user_message:
+        send_message(chat_id, 'Введите лицевой счёт')
+        state = SUBMIT_READINGS
+    else:
+        state = send_fallback(chat_id)
+
+    return state, None

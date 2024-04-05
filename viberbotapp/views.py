@@ -5,11 +5,13 @@ from django.views.decorators.http import require_POST
 from viberbot.api.viber_requests import ViberMessageRequest
 
 from viberbotapp.bot_config import viber, START, MAIN_MENU, SUBMIT_READINGS, \
-    METER_INFO, FAVORITES, CONTACT_INFO, FIND_BILL, CREATE_FAVORITE
+    METER_INFO, FAVORITES, CONTACT_INFO, FIND_BILL, CREATE_FAVORITE, \
+    INPUT_READINGS
 from viberbotapp.commands.contact_info import contact_info
 from viberbotapp.commands.create_favorite import create_favorite
 from viberbotapp.commands.favorites import favorites
 from viberbotapp.commands.find_bill import find_bill
+from viberbotapp.commands.input_readings import input_readings
 from viberbotapp.commands.main_menu import handle_main_menu, handle_start
 from viberbotapp.commands.helper import choose_section
 from viberbotapp.commands.meter_info import meter_info
@@ -49,10 +51,11 @@ def message_handler(viber_request):
         state = handle_start(chat_id)
     elif state == MAIN_MENU:
         state = handle_main_menu(message, chat_id, user_bills)
-    elif state == SUBMIT_READINGS:
-        state = submit_readings(message, chat_id)
-    elif state == METER_INFO:
-        state, bill_value = meter_info(message, chat_id)
+    elif state == SUBMIT_READINGS or state == METER_INFO:
+        if state == SUBMIT_READINGS:
+            state, bill_value = submit_readings(message, chat_id)
+        else:
+            state, bill_value = meter_info(message, chat_id)
         if bill_value:
             user.context = bill_value
     elif state == FAVORITES:
@@ -64,6 +67,8 @@ def message_handler(viber_request):
         state, bill_value = find_bill(message, chat_id)
     elif state == CREATE_FAVORITE:
         state = create_favorite(message, chat_id)
+    elif state == INPUT_READINGS:
+        state = input_readings(message, chat_id)
     if state == MAIN_MENU:
         bills = bool(user.favorites.count())
         state = choose_section(chat_id, bills)
