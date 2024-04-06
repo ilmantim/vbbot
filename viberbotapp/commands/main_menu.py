@@ -8,17 +8,21 @@ from viberbotapp.commands.keyboards import choose_MRO_keyboard, \
 
 def handle_main_menu(message, chat_id, bills):
     user_message = message.text.lower()
+    if bills:
+        text = 'Выберите нужный пункт в меню снизу.'
+    else:
+        text = 'Введите лицевой счёт'
     if 'показания' in user_message:  # добавить проверку наличия избранных счетов
         send_message(
             chat_id,
-            'Введите лицевой счёт',
+            text,
             submit_readings_and_get_meter_keyboard(bills)
         )
         state = SUBMIT_READINGS
     elif 'прибор' in user_message:  # добавить проверку наличия избранных счетов
         send_message(
             chat_id,
-            'Введите лицевой счёт',
+            text,
             submit_readings_and_get_meter_keyboard(bills)
         )
         state = METER_INFO
