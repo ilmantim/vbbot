@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from viberbotapp.bot_config import SUBMIT_READINGS, METER_INFO, \
     FAVORITES, CONTACT_INFO, MAIN_MENU
 from viberbotapp.commands.helper import send_fallback, send_message
@@ -13,12 +15,19 @@ def handle_main_menu(message, chat_id, bills):
     else:
         text = 'Введите лицевой счёт'
     if 'показания' in user_message:  # добавить проверку наличия избранных счетов
-        send_message(
-            chat_id,
-            text,
-            submit_readings_and_get_meter_keyboard(bills)
-        )
-        state = SUBMIT_READINGS
+        if check_reading_period():
+            send_message(
+                chat_id,
+                text,
+                submit_readings_and_get_meter_keyboard(bills)
+            )
+            state = SUBMIT_READINGS
+        else:
+            send_message(
+                chat_id,
+                "Показания принимаются с 15 по 25 число каждого месяца."
+            )
+            state = MAIN_MENU
     elif 'прибор' in user_message:  # добавить проверку наличия избранных счетов
         send_message(
             chat_id,
@@ -60,3 +69,10 @@ def handle_start(chat_id):
         "и получить контактную информацию."
     )
     return MAIN_MENU
+
+
+def check_reading_period():
+    today = timezone.now()
+    READING_PERIOD_START = 15
+    READING_PERIOD_END = 25
+    return READING_PERIOD_START <= today.day <= READING_PERIOD_END
