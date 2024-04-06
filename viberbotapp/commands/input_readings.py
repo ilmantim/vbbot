@@ -12,8 +12,6 @@ def input_readings(message, chat_id):
     )
     if user_message.isdigit():
         context = save_reading(user_message, chat_id)
-        if not context:
-            return MAIN_MENU, None
         state, context = show_rate(chat_id, context)
         return state, context
     else:
@@ -51,7 +49,7 @@ def save_reading(message, chat_id):
                 chat_id,
                 text
             )
-            return False
+            return ','.join(rates)
     rate.readings = int(message)
     rate.registration_date = timezone.now()
     rate.save()
