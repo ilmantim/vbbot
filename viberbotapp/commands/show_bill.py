@@ -47,8 +47,6 @@ def show_bill(message, chat_id):
             str(rate.id) for device in devices for rate in
             device.rates.all()
         ]
-        print('ЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖЖ', rates_ids)
-        print('ЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁ', ','.join(rates_ids))
         context = ','.join(rates_ids)
         state, context = show_rate(chat_id, context)
         return state, context
@@ -59,9 +57,6 @@ def show_bill(message, chat_id):
 
 
 def show_rate(chat_id, context):
-    user, created = Person.objects.get_or_create(
-        chat_id=chat_id
-    )
     if not context:
         send_readings(chat_id)
         state = MAIN_MENU

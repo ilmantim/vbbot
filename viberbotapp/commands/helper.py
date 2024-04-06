@@ -25,5 +25,3 @@ def send_message(chat_id, *args):
     viber.send_messages(chat_id, [
         TextMessage(text=i) if type(i) is str else i for i in args
     ])
-
-

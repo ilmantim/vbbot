@@ -124,7 +124,6 @@ def create_bill(message, response_bill):
                             "rates"][rate_num]["cost"]
                 }
             )
-            # context.user_data['rate'] = rate.id
             readings = \
                 response_bill["core_devices"][device_num]["rates"][
                     rate_num]["reading"]

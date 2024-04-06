@@ -14,7 +14,7 @@ def handle_main_menu(message, chat_id, bills):
         text = 'Выберите нужный пункт в меню снизу.'
     else:
         text = 'Введите лицевой счёт'
-    if 'показания' in user_message:  # добавить проверку наличия избранных счетов
+    if 'показания' in user_message:
         if check_reading_period():
             send_message(
                 chat_id,
@@ -28,7 +28,7 @@ def handle_main_menu(message, chat_id, bills):
                 "Показания принимаются с 15 по 25 число каждого месяца."
             )
             state = MAIN_MENU
-    elif 'прибор' in user_message:  # добавить проверку наличия избранных счетов
+    elif 'прибор' in user_message:
         send_message(
             chat_id,
             text,

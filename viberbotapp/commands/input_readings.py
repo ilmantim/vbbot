@@ -1,15 +1,13 @@
-from viberbotapp.bot_config import INPUT_READINGS, MAIN_MENU
+from django.utils import timezone
+
+from viberbotapp.bot_config import MAIN_MENU
 from viberbotapp.commands.helper import send_message, send_fallback
 from viberbotapp.commands.show_bill import show_rate, send_readings
 from viberbotapp.models import Person, Rate
-from django.utils import timezone
 
 
 def input_readings(message, chat_id):
     user_message = message.text.lower()
-    user, created = Person.objects.get_or_create(
-        chat_id=chat_id
-    )
     if user_message.isdigit():
         context = save_reading(user_message, chat_id)
         state, context = show_rate(chat_id, context)
@@ -29,7 +27,6 @@ def save_reading(message, chat_id):
     )
     rates_str = user.context
     rates = rates_str.split(',')
-    print('ППППППППППППППППППППППППППППППППППППППППППППп', rates)
     rate = Rate.objects.get(id=rates[0])
     if rate.readings:
         readings_1 = rate.readings
