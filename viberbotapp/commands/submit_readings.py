@@ -14,8 +14,6 @@ def submit_readings(message, chat_id):
         state, context = show_bill(user_message, chat_id)
         return state, context
     elif user_message.isdigit():
-        user.prev_step = SUBMIT_READINGS
-        user.save()
         state, context = find_bill(message, chat_id)
         return state, context
 ###############################################################################

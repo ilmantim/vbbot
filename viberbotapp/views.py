@@ -54,8 +54,10 @@ def message_handler(viber_request):
     elif state == SUBMIT_READINGS or state == METER_INFO:
         if state == SUBMIT_READINGS:
             state, context = submit_readings(message, chat_id)
+            user.prev_step = SUBMIT_READINGS
         else:
             state, context = meter_info(message, chat_id)
+            user.prev_step = METER_INFO
         if context:
             user.context = context
             user.details = context

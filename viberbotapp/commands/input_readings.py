@@ -1,3 +1,4 @@
+from viberbotapp.bot_config import INPUT_READINGS, MAIN_MENU
 from viberbotapp.commands.helper import send_message, send_fallback
 from viberbotapp.commands.show_bill import show_rate
 from viberbotapp.models import Person, Rate
@@ -11,6 +12,8 @@ def input_readings(message, chat_id):
     )
     if user_message.isdigit():
         context = save_reading(user_message, chat_id)
+        if not context:
+            return MAIN_MENU, None
         state, context = show_rate(chat_id, context)
         return state, context
     else:
@@ -33,6 +36,10 @@ def save_reading(message, chat_id):
         k = readings_2 / readings_1
         if subtraction >= 0 and k <= 2:
             text = f'Ваш расход составил {subtraction} квт*ч'
+            send_message(
+                chat_id,
+                text
+            )
         else:
             if subtraction < 0:
                 text = ('Значение не может быть отрицательным, '
@@ -40,10 +47,11 @@ def save_reading(message, chat_id):
             else:
                 text = ('Недопустимые данные, перепроверьте показания '
                            'и попробуйте снова.')
-        send_message(
-            chat_id,
-            text
-        )
+            send_message(
+                chat_id,
+                text
+            )
+            return False
     rate.readings = int(message)
     rate.registration_date = timezone.now()
     rate.save()

@@ -13,8 +13,6 @@ def meter_info(message, chat_id):
     if user.prev_step == METER_INFO and user_message in ['да', 'нет']:
         state = show_bill(user_message, chat_id)
     elif user_message.isdigit():
-        user.prev_step = METER_INFO
-        user.save()
         state, bill_value = find_bill(message, chat_id)
         return state, bill_value
     elif 'узнать' in user_message or 'счет' in user_message:
