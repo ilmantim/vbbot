@@ -1,6 +1,6 @@
 from viberbotapp.bot_config import INPUT_READINGS, MAIN_MENU
 from viberbotapp.commands.helper import send_message, send_fallback
-from viberbotapp.commands.show_bill import show_rate
+from viberbotapp.commands.show_bill import show_rate, send_readings
 from viberbotapp.models import Person, Rate
 from django.utils import timezone
 
@@ -14,9 +14,13 @@ def input_readings(message, chat_id):
         context = save_reading(user_message, chat_id)
         state, context = show_rate(chat_id, context)
         return state, context
+    elif 'меню' in user_message:
+        send_readings(chat_id)
+        state = MAIN_MENU
     else:
         state = send_fallback(chat_id)
-        return state, None
+
+    return state, None
 
 
 def save_reading(message, chat_id):

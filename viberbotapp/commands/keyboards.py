@@ -126,6 +126,20 @@ def yes_no_keyboard():
     return keyboard_message
 
 
+def return_to_main_menu_keyboard():
+    keyboard = {
+        "Type": "keyboard",
+        "Buttons": [
+            get_button("Главное меню")
+        ]
+    }
+    keyboard_message = KeyboardMessage(
+        keyboard=keyboard,
+        min_api_version=6
+    )
+    return keyboard_message
+
+
 def get_button(text, text_2=None, background_color='#ae9ef4', font_color='#e5e1ff'):
     if not text_2:
         text_2 = text

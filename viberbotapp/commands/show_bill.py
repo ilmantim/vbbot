@@ -4,6 +4,7 @@ import requests
 from viberbotapp.bot_config import MAIN_MENU, METER_INFO, SUBMIT_READINGS, \
     INPUT_READINGS, logger
 from viberbotapp.commands.helper import send_message, send_fallback
+from viberbotapp.commands.keyboards import return_to_main_menu_keyboard
 from viberbotapp.commands.retrieve_bill_info import API_BASE_URL
 from viberbotapp.models import Person, Bill, Rate
 
@@ -89,7 +90,8 @@ def show_rate(chat_id, context):
             f'- Последнее показание: {readings_str}\n'
             f'- Тариф: {rate.cost}\n'
             f'-----------------------------------\n',
-            'Введите показание:'
+            'Введите показание:',
+            return_to_main_menu_keyboard()
         )
         return INPUT_READINGS, context
 
