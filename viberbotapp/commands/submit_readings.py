@@ -1,6 +1,7 @@
 from viberbotapp.bot_config import MAIN_MENU, SUBMIT_READINGS
 from viberbotapp.commands.find_bill import find_bill
 from viberbotapp.commands.helper import send_message, send_fallback
+from viberbotapp.commands.keyboards import return_to_main_menu_keyboard
 from viberbotapp.commands.show_bill import show_bill
 from viberbotapp.models import Person
 
@@ -22,7 +23,8 @@ def submit_readings(message, chat_id):
             chat_id,
             "Лицевой счёт указан в верхней части квитанции (извещение) "
             "рядом с Вашей фамилией",
-            "Введите лицевой счет:"
+            "Введите лицевой счет:",
+            return_to_main_menu_keyboard()
         )
         state = SUBMIT_READINGS
     elif 'меню' in user_message:
