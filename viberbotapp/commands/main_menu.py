@@ -1,8 +1,7 @@
-from django.utils import timezone
-
 from viberbotapp.bot_config import SUBMIT_READINGS, METER_INFO, \
     FAVORITES, CONTACT_INFO, MAIN_MENU
-from viberbotapp.commands.helper import send_fallback, send_message
+from viberbotapp.commands.helper import send_fallback, send_message, \
+    check_reading_period
 from viberbotapp.commands.keyboards import choose_MRO_keyboard, \
     show_bills_keyboard, \
     submit_readings_and_get_meter_keyboard
@@ -69,10 +68,3 @@ def handle_start(chat_id):
         "и получить контактную информацию."
     )
     return MAIN_MENU
-
-
-def check_reading_period():
-    today = timezone.now()
-    READING_PERIOD_START = 15
-    READING_PERIOD_END = 25
-    return READING_PERIOD_START <= today.day <= READING_PERIOD_END
