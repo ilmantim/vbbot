@@ -51,13 +51,12 @@ def message_handler(viber_request):
         state = handle_start(chat_id)
     elif state == MAIN_MENU:
         state = handle_main_menu(message, chat_id, user_bills)
+        user.prev_step = state
     elif state == SUBMIT_READINGS or state == METER_INFO:
         if state == SUBMIT_READINGS:
             state, context = submit_readings(message, chat_id)
-            user.prev_step = SUBMIT_READINGS
         else:
             state, context = meter_info(message, chat_id)
-            user.prev_step = METER_INFO
         if context:
             user.context = context
             user.details = context
