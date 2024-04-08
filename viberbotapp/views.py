@@ -43,10 +43,6 @@ def message_handler(viber_request):
     chat_id = user.chat_id
     message = viber_request.message
     user_bills = [str(favorite.bill.value) for favorite in user.favorites.all()]
-    print('Сейчас такой номер стейта: ', state)
-    print('Сейчас такое сообщение: ', message)
-    print('Сейчас такое id: ', chat_id)
-    print('Это контекст сейчас', user.context)
     if state == START:
         state = handle_start(chat_id)
     elif state == MAIN_MENU:
@@ -83,8 +79,6 @@ def message_handler(viber_request):
 
 def check_time(timestamp):
     current_time_ms = int(round(timezone.now().timestamp() * 1000))
-    print('ЭТО ВРЕМЯ РЕКВЕСТА', timestamp)
-    print('ЭТО ВРЕМЯ СЕЙЧАС', current_time_ms)
     diff_ms = abs(current_time_ms - timestamp)
     diff_sec = diff_ms / 1000
     if diff_sec <= 5:
