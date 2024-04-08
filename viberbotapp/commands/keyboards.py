@@ -87,7 +87,7 @@ def delete_bills_keyboard(info):
     return keyboard_message
 
 
-def submit_readings_and_get_meter_keyboard(info):
+def submit_readings_and_get_meter_keyboard(info=None):
     buttons = [
         get_button("Как узнать лицевой счёт"),
         get_button("Главное меню")
