@@ -17,4 +17,3 @@ sen = dict(
     ]
 )
 r = requests.post(hook, json.dumps(sen), headers=headers)
-print(r.json())
