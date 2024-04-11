@@ -25,10 +25,7 @@ def webhook(request):
     post_data = request.body.decode('utf-8')
     viber_request = viber.parse_request(post_data)
 
-    if (isinstance(viber_request, ViberMessageRequest) and (
-            viber_request.sender.id == '2qimAURso5+5B7yav4ZDIA==' or
-            viber_request.sender.id == 'cn+6wVEyC20yMu9iGETumw=='
-    )) and check_time(viber_request.timestamp):
+    if isinstance(viber_request, ViberMessageRequest) and check_time(viber_request.timestamp):
         message_handler(viber_request)
 
     return HttpResponse(status=200)
